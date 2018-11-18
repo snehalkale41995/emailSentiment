@@ -1,54 +1,71 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import * as actions from "../../store/actions/index";
-import {
-  FormGroup,
-  Col,
-  Button,
-  Card,
-  CardHeader,
-  Row,
-  CardBody
-} from "reactstrap";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
-import "react-bootstrap-table/dist/react-bootstrap-table.min.css";
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  CardHeader,
+  FormGroup,
+  Button
+} from "reactstrap";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../../components/Loader/Loader";
 import Modal from "../../components/Modal/ModalCart";
+import Loader from "../../components/Loader/Loader";
+
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      emailData: "",
-      loading: true,
-      roomId: ""
+      deleteFlag: false,
+      eventId: "",
+      loading: true
     };
   }
 
   componentDidMount() {
-    this.props.getEmailData();
     let compRef = this;
+    this.props.getEmailData();
     setTimeout(function() {
       compRef.setState({ loading: false });
-    }, 500);
+    }, 300);
   }
 
-  onEditRoom(cell, row) {
+  // Toaster(compRef, successFlag, actionName) {
+  //   this.setState({ loading: false });
+  //   if (successFlag) {
+  //     toast.success("Event " + actionName + " Successfully.", {
+  //       position: toast.POSITION.BOTTOM_RIGHT
+  //     });
+  //   } else {
+  //     toast.error("Something went wrong", {
+  //       position: toast.POSITION.BOTTOM_RIGHT
+  //     });
+  //   }
+  // }
+
+  onUserResponse(cell, row) {
+    let componentRef = this;
+    // <i class="far fa-meh"></i>
     return (
-      <Link
-        to={`${this.props.match.url}/rooms/${row._id}`}
-        onClick={() => this.getRoomToEdit(row)}
-      >
-        <i className="fa fa-pencil" title="Edit" />
+      <Link to={this}>
+        <i class="fa fa-trash" title="Delete" />
       </Link>
     );
   }
-  
- 
+  //onClick={() => componentRef.deleteConfirm(row._id)}
+  // formatStartDate(cell, row) {
+  //   return cell ? moment(cell).format("DD/MM/YYYY") : "";
+  // }
+
   render() {
-    const options = {
+    const sortingOptions = {
+      defaultSortName: "Subject",
+      defaultSortOrder: "asc",
       sizePerPageList: [
         {
           text: "50",
@@ -76,7 +93,7 @@ class Dashboard extends Component {
         <ToastContainer autoClose={2000} />
         <FormGroup row className="marginBottomZero">
           <Col xs="6" md="3">
-           
+            &nbsp;&nbsp;
           </Col>
         </FormGroup>
         <br />
@@ -86,10 +103,10 @@ class Dashboard extends Component {
               <Card>
                 <CardHeader>
                   <FormGroup row className="marginBottomZero">
-                    <Col xs="12" md="4">
-                      <h1 className="regHeading paddingTop8">emailData List</h1>
-                    </Col>
-                    <Col xs="10" md="3">
+                    <Col xs="6" md="3">
+                      <h1 className="regHeading paddingTop8">
+                        Email Sentiment Analysis
+                      </h1>
                     </Col>
                   </FormGroup>
                 </CardHeader>
@@ -99,43 +116,71 @@ class Dashboard extends Component {
                     data={this.props.emailAnalysisData}
                     pagination={true}
                     search={true}
-                    options={options}
+                    options={sortingOptions}
                     exportCSV={true}
-                    csvFileName="emailData List"
+                    csvFileName="Analysis List"
                     version="4"
                   >
                     <TableHeaderColumn
                       dataField="Id"
                       headerAlign="left"
+                      align="left"
+                      width={30}
                       isKey
-                      hidden
+                      hidden={true}
                     >
                       Id
                     </TableHeaderColumn>
-                    {/* <TableHeaderColumn
-                      dataField="Subject"
-                      headerAlign="left"
-                      width="30"
-                      dataSort={true}
-                    >
-                    Subject
-                    </TableHeaderColumn> */}
 
                     <TableHeaderColumn
-                      dataField="roomName"
+                      dataField="Subject"
                       headerAlign="left"
-                      width="30"
+                      align="left"
+                      width={30}
                       dataSort={true}
                     >
-                      Room Name
+                      Subject
+                    </TableHeaderColumn>
+
+                    <TableHeaderColumn
+                      dataField="Sender"
+                      headerAlign="left"
+                      align="left"
+                      width={30}
+                      dataSort={true}
+                    >
+                      Sender
                     </TableHeaderColumn>
                     <TableHeaderColumn
-                      dataField="capacity"
+                      dataField="CreatedAt"
                       headerAlign="left"
-                      width="100"
+                      align="left"
+                      // dataFormat={this.formatStartDate.bind(this)}
+                      width={20}
+                      hidden={true}
                       dataSort={true}
                     >
-                      Capacity
+                      CreatedAt
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="Verified"
+                      dataFormat={this.onUserResponse.bind(this)}
+                      headerAlign="left"
+                      align="left"
+                      width={10}
+                      export={false}
+                    >
+                      Response
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="Verified"
+                      dataFormat={this.onUserResponse.bind(this)}
+                      headerAlign="left"
+                      align="left"
+                      width={10}
+                      export={false}
+                    >
+                      Response
                     </TableHeaderColumn>
                   </BootstrapTable>
                 </CardBody>
@@ -147,17 +192,20 @@ class Dashboard extends Component {
     );
   }
 }
+
 const mapStateToProps = state => {
   return {
     emailAnalysisData: state.dashboard.emailAnalysisData
   };
 };
-const mapDispatchToProps = dispatch => {
+
+const matchDispatchToProps = dispatch => {
   return {
     getEmailData: () => dispatch(actions.getEmailData())
   };
 };
+
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  matchDispatchToProps
 )(Dashboard);
