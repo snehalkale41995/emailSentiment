@@ -17,6 +17,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../components/Loader/Loader";
 import Modal from "../../components/Modal/ModalCart";
+import { Emoji } from "emoji-mart";
+
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -35,18 +37,53 @@ class Dashboard extends Component {
     }, 500);
   }
 
-  onEditRoom(cell, row) {
+  onEditFeedback(cell, row) {
     return (
-      <Link
-        to={`${this.props.match.url}/rooms/${row._id}`}
-        onClick={() => this.getRoomToEdit(row)}
-      >
-        <i className="fa fa-pencil" title="Edit" />
-      </Link>
+      <FormGroup row>
+        <Col>
+          <Emoji
+            emoji="blush"
+            set="emojione"
+            onClick={() => this.updateFeedback(row.Id, 1)}
+            size={30}
+          />
+        </Col>
+        <Col>
+          <Emoji
+            emoji="neutral_face"
+            set="emojione"
+            onClick={() => this.updateFeedback(row.Id, 2)}
+            size={30}
+          />
+        </Col>
+        <Col>
+          <Emoji
+            emoji="white_frowning_face"
+            onClick={() => this.updateFeedback(row.Id, 0)}
+            set="emojione"
+            size={30}
+          />
+        </Col>
+      </FormGroup>
+
+      // <Link
+      //   to={`${this.props.match.url}/rooms/${row._id}`}
+      //   onClick={() => this.updateFeedback(row)}
+      // >
+      //   <i className="fa fa-pencil" title="Edit" />
+      // </Link>
     );
   }
-  
- 
+
+  updateFeedback(emailId, VerifiedField) {
+    let emailData = {
+      Id: emailId,
+      Verified: VerifiedField
+    };
+    console.log("emailData", emailData);
+    console.log("Id", emailData.Id);
+    this.props.updateEmailData(emailData);
+  }
   render() {
     const options = {
       sizePerPageList: [
@@ -75,9 +112,7 @@ class Dashboard extends Component {
       <div>
         <ToastContainer autoClose={2000} />
         <FormGroup row className="marginBottomZero">
-          <Col xs="6" md="3">
-           
-          </Col>
+          <Col xs="6" md="3" />
         </FormGroup>
         <br />
         <div className="animated fadeIn">
@@ -87,10 +122,9 @@ class Dashboard extends Component {
                 <CardHeader>
                   <FormGroup row className="marginBottomZero">
                     <Col xs="12" md="4">
-                      <h1 className="regHeading paddingTop8">emailData List</h1>
+                      <h1 className="regHeading paddingTop8">Feedback</h1>
                     </Col>
-                    <Col xs="10" md="3">
-                    </Col>
+                    <Col xs="10" md="3" />
                   </FormGroup>
                 </CardHeader>
                 <CardBody>
@@ -101,7 +135,7 @@ class Dashboard extends Component {
                     search={true}
                     options={options}
                     exportCSV={true}
-                    csvFileName="emailData List"
+                    csvFileName="Feedback"
                     version="4"
                   >
                     <TableHeaderColumn
@@ -112,30 +146,40 @@ class Dashboard extends Component {
                     >
                       Id
                     </TableHeaderColumn>
-                    {/* <TableHeaderColumn
+                    <TableHeaderColumn
                       dataField="Subject"
                       headerAlign="left"
-                      width="30"
+                      width="20"
                       dataSort={true}
                     >
-                    Subject
-                    </TableHeaderColumn> */}
+                      Subject
+                    </TableHeaderColumn>
 
                     <TableHeaderColumn
-                      dataField="roomName"
+                      dataField="Sender"
                       headerAlign="left"
-                      width="30"
+                      width="20"
                       dataSort={true}
                     >
-                      Room Name
+                      Sender
                     </TableHeaderColumn>
+
                     <TableHeaderColumn
-                      dataField="capacity"
+                      dataField="Sentiment"
                       headerAlign="left"
-                      width="100"
+                      width="20"
                       dataSort={true}
                     >
-                      Capacity
+                      Sentiment
+                    </TableHeaderColumn>
+
+                    <TableHeaderColumn
+                      dataField="edit"
+                      headerAlign="left"
+                      width="10"
+                      dataFormat={this.onEditFeedback.bind(this)}
+                    >
+                      Feedback
                     </TableHeaderColumn>
                   </BootstrapTable>
                 </CardBody>
@@ -154,7 +198,8 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    getEmailData: () => dispatch(actions.getEmailData())
+    getEmailData: () => dispatch(actions.getEmailData()),
+    updateEmailData: emailData => dispatch(actions.updateEmailData(emailData))
   };
 };
 export default connect(

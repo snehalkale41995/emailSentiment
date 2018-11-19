@@ -34,11 +34,15 @@ export const updateEmailDataSuccess = (emailDataId, emailData) => {
 ///api/metadata/emaildata
 
 export const getEmailData = () => {
+  let emails = [];
   return dispatch => {
     axios
-      .get(`${AppConfig.serverURL}/api/room`)
+      .get(`${AppConfig.serverURL}/api/metadata/emaildata`)
       .then(response => {
-        dispatch(getEmailDataSuccess(response.data));
+        emails = _.filter(response.data, function(email) {
+          return email.Verified === null;
+        });
+        dispatch(getEmailDataSuccess(emails));
       })
       .catch(error => {
         dispatch(getEmailDataFail(error));
@@ -47,19 +51,13 @@ export const getEmailData = () => {
 };
 
 export const updateEmailData = emailData => {
-  let id = emailData.id;
-  let emailDataObj = _.pick(emailData, [
-    "emailDataName",
-    "venue",
-    "description",
-    "startDate",
-    "endDate",
-    "emailDataLogo"
-  ]);
+  let Id = emailData.Id;
+  let emailDataObj = _.pick(emailData, ["Verified"]);
   return dispatch => {
     axios
-      .put(`${AppConfig.serverURL}/api/emailData/${id}`, emailDataObj)
+      .put(`${AppConfig.serverURL}/api/metadata/emailData/${Id}`, emailDataObj)
       .then(response => {
+        dispatch(getEmailData());
         dispatch(updateEmailDataSuccess(response.data.Id, emailData));
       })
       .catch(error => {
