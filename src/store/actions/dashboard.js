@@ -67,22 +67,25 @@ export const updateEmailData = emailData => {
 };
 
 export const getVerifiedData = () => {
-  let emails = [];
+  let emailList = [],
+    emailIds = [];
   return dispatch => {
     axios
-      .get(`${AppConfig.serverURL}/api/metadata/emailBody`)
+      .get(`${AppConfig.serverURL}/api/metadata/verifiedEmails`)
       .then(response => {
-        emails = _.filter(response.data, function(email) {
-          return email.Verified === 0 || email.Verified === 1;
-        });
-        dispatch(exportToTsv(emails));
+        emailList = _.map(
+          response.data,
+          _.partialRight(_.pick, ["Subject", "Verified"])
+        );
+        emailIds = _.map(response.data, _.partialRight(_.pick, ["Id"]));
+        dispatch(exportToTsv(emailList, emailIds));
       });
   };
 };
 
-export const exportToTsv = emails => {
-  let emailData = emails;
-  console.log("emailData", emailData);
+export const exportToTsv = (emailList, emailIds) => {
+  let emailData = emailList;
+  let emailDataIds = emailIds;
   return dispatch => {
     axios
       .post(
@@ -90,7 +93,21 @@ export const exportToTsv = emails => {
         emailData
       )
       .then(response => {
-        // to call arki's python vali api
+        dispatch(bulkUploadEmailData(emailDataIds));
+      });
+  };
+};
+
+export const bulkUploadEmailData = emailIds => {
+  let emailDataIds = emailIds;
+  return dispatch => {
+    axios
+      .post(
+        `${AppConfig.serverURL}/api/metadata/emaildata/bulkUpdate`,
+        emailDataIds
+      )
+      .then(response => {
+        // To call Arkita's python api
       });
   };
 };
