@@ -1,4 +1,1 @@
-
-export { getEmailData, updateEmailData } from "./dashboard";
-
-
+export { getEmailData, updateEmailData, getVerifiedData } from "./dashboard";

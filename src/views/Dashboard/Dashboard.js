@@ -65,25 +65,28 @@ class Dashboard extends Component {
           />
         </Col>
       </FormGroup>
-
-      // <Link
-      //   to={`${this.props.match.url}/rooms/${row._id}`}
-      //   onClick={() => this.updateFeedback(row)}
-      // >
-      //   <i className="fa fa-pencil" title="Edit" />
-      // </Link>
     );
   }
 
   updateFeedback(emailId, VerifiedField) {
+    setTimeout(function() {
+      compRef.setState({ loading: true });
+    }, 100);
+    let compRef = this;
     let emailData = {
       Id: emailId,
       Verified: VerifiedField
     };
-    console.log("emailData", emailData);
-    console.log("Id", emailData.Id);
     this.props.updateEmailData(emailData);
+    setTimeout(function() {
+      compRef.setState({ loading: false });
+    }, 500);
   }
+
+  exportToTsv() {
+    this.props.getVerifiedData();
+  }
+
   render() {
     const options = {
       sizePerPageList: [
@@ -121,10 +124,13 @@ class Dashboard extends Component {
               <Card>
                 <CardHeader>
                   <FormGroup row className="marginBottomZero">
-                    <Col xs="12" md="4">
+                    <Col xs="12" md="11">
                       <h1 className="regHeading paddingTop8">Feedback</h1>
                     </Col>
-                    <Col xs="10" md="3" />
+                    <Button color="primary" onClick={() => this.exportToTsv()}>
+                     Upload TSV
+                    </Button>
+                    <Col xs="10" md="1" />
                   </FormGroup>
                 </CardHeader>
                 <CardBody>
@@ -134,8 +140,6 @@ class Dashboard extends Component {
                     pagination={true}
                     search={true}
                     options={options}
-                    exportCSV={true}
-                    csvFileName="Feedback"
                     version="4"
                   >
                     <TableHeaderColumn
@@ -199,7 +203,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     getEmailData: () => dispatch(actions.getEmailData()),
-    updateEmailData: emailData => dispatch(actions.updateEmailData(emailData))
+    updateEmailData: emailData => dispatch(actions.updateEmailData(emailData)),
+    getVerifiedData: () => dispatch(actions.getVerifiedData())
   };
 };
 export default connect(

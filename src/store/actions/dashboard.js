@@ -31,8 +31,8 @@ export const updateEmailDataSuccess = (emailDataId, emailData) => {
     emailData: emailData
   };
 };
-///api/metadata/emaildata
 
+///api/metadata/emaildata
 export const getEmailData = () => {
   let emails = [];
   return dispatch => {
@@ -62,6 +62,35 @@ export const updateEmailData = emailData => {
       })
       .catch(error => {
         dispatch(updateEmailDataFail(error));
+      });
+  };
+};
+
+export const getVerifiedData = () => {
+  let emails = [];
+  return dispatch => {
+    axios
+      .get(`${AppConfig.serverURL}/api/metadata/emailBody`)
+      .then(response => {
+        emails = _.filter(response.data, function(email) {
+          return email.Verified === 0 || email.Verified === 1;
+        });
+        dispatch(exportToTsv(emails));
+      });
+  };
+};
+
+export const exportToTsv = emails => {
+  let emailData = emails;
+  console.log("emailData", emailData);
+  return dispatch => {
+    axios
+      .post(
+        `${AppConfig.serverURL}/api/metadata/emaildata/azurestorage`,
+        emailData
+      )
+      .then(response => {
+        // to call arki's python vali api
       });
   };
 };
