@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../components/Loader/Loader";
 import Modal from "../../components/Modal/ModalCart";
 import { Emoji } from "emoji-mart";
-
+import * as Toaster from "../../components/Modal/Toaster";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +45,7 @@ class Dashboard extends Component {
             emoji="blush"
             set="emojione"
             onClick={() => this.updateFeedback(row.Id, 1)}
-            size={30}
+            size={40}
           />
         </Col>
         <Col>
@@ -53,7 +53,7 @@ class Dashboard extends Component {
             emoji="neutral_face"
             set="emojione"
             onClick={() => this.updateFeedback(row.Id, 2)}
-            size={30}
+            size={40}
           />
         </Col>
         <Col>
@@ -61,7 +61,7 @@ class Dashboard extends Component {
             emoji="white_frowning_face"
             onClick={() => this.updateFeedback(row.Id, 0)}
             set="emojione"
-            size={30}
+            size={40}
           />
         </Col>
       </FormGroup>
@@ -84,7 +84,17 @@ class Dashboard extends Component {
   }
 
   exportToTsv() {
+    let compRef = this;
     this.props.getVerifiedData();
+    this.setState({ loading: true });
+    setTimeout(() => {
+      let message = "";
+      compRef.props.emailDataError
+        ? (message = "Something Went Wrong")
+        : (message = `TSV File Uploaded Successfully`);
+      compRef.setState({ loading: false });
+      Toaster.Toaster(message, compRef.props.emailDataError);
+    }, 1000);
   }
 
   render() {
@@ -128,7 +138,7 @@ class Dashboard extends Component {
                       <h1 className="regHeading paddingTop8">Feedback</h1>
                     </Col>
                     <Button color="primary" onClick={() => this.exportToTsv()}>
-                     Upload TSV
+                      Upload TSV
                     </Button>
                     <Col xs="10" md="1" />
                   </FormGroup>
@@ -180,12 +190,13 @@ class Dashboard extends Component {
                     <TableHeaderColumn
                       dataField="edit"
                       headerAlign="left"
-                      width="10"
+                      width="15"
                       dataFormat={this.onEditFeedback.bind(this)}
                     >
                       Feedback
                     </TableHeaderColumn>
                   </BootstrapTable>
+                  <ToastContainer autoClose={1000} />
                 </CardBody>
               </Card>
             </Col>
@@ -197,7 +208,8 @@ class Dashboard extends Component {
 }
 const mapStateToProps = state => {
   return {
-    emailAnalysisData: state.dashboard.emailAnalysisData
+    emailAnalysisData: state.dashboard.emailAnalysisData,
+    emailDataError: state.dashboard.emailDataError
   };
 };
 const mapDispatchToProps = dispatch => {

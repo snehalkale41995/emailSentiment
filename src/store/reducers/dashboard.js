@@ -5,7 +5,8 @@ const initialState = {
   loading: false,
   emailDataUpdated: false,
   errorMessage: "",
-  error: false
+  error: false,
+  emailDataError: false
 };
 const dashboardReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -31,6 +32,16 @@ const dashboardReducer = (state = initialState, action) => {
       return {
         ...state,
         emailDataUpdated: false
+      };
+    case actionTypes.LOG_EMAILDATA_ERROR:
+      return {
+        ...state,
+        emailDataError: true
+      };
+    case actionTypes.CLEAR_EMAILDATA_ERROR:
+      return {
+        ...state,
+        emailDataError: false
       };
     default:
       return state;
