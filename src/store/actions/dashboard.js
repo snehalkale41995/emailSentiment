@@ -94,6 +94,10 @@ export const exportToTsv = (emailList, emailIds) => {
       )
       .then(response => {
         dispatch(bulkUploadEmailData(emailDataIds));
+        dispatch(clearEmailDataError());
+      })
+      .catch(response => {
+        dispatch(logEmailDataError());
       });
   };
 };
@@ -107,7 +111,34 @@ export const bulkUploadEmailData = emailIds => {
         emailDataIds
       )
       .then(response => {
+        // dispatch(runTsvEngine());
+        dispatch(clearEmailDataError());
+      })
+      .catch(response => {
+        // console.log("error", response);
+        dispatch(logEmailDataError());
+      });
+  };
+};
+
+export const runTsvEngine = () => {
+  return dispatch => {
+    axios
+      .post(`${AppConfig.serverURL}/api/metadata/tsvRunEngine`)
+      .then(response => {
         // To call Arkita's python api
       });
+  };
+};
+
+export const logEmailDataError = () => {
+  return {
+    type: actionTypes.LOG_EMAILDATA_ERROR
+  };
+};
+
+export const clearEmailDataError = () => {
+  return {
+    type: actionTypes.CLEAR_EMAILDATA_ERROR
   };
 };
