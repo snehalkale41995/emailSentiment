@@ -30,7 +30,9 @@ class Dashboard extends Component {
     this.state = {
       emailData: "",
       loading: true,
-      roomId: ""
+      roomId: "",
+      userFeedbackFlag: true,
+      selectedSentimentId: ""
     };
   }
 
@@ -39,7 +41,7 @@ class Dashboard extends Component {
     let compRef = this;
     setTimeout(function() {
       compRef.setState({ loading: false });
-    }, 3000);
+    }, 2000);
   }
 
   onEditFeedback(cell, row) {
@@ -74,9 +76,8 @@ class Dashboard extends Component {
   }
 
   updateFeedback(emailId, VerifiedField) {
-    setTimeout(function() {
-      compRef.setState({ loading: true });
-    }, 100);
+    this.setState({ loading: true });
+
     let compRef = this;
     let emailData = {
       Id: emailId,
@@ -102,60 +103,113 @@ class Dashboard extends Component {
     }, 1000);
   }
 
-  getSentimentPrediction(Sentiment) {
+  getSentimentPrediction(Id, Sentiment) {
     if (Sentiment == "Positive") {
-      return <img src={happyFace} title="Happy" />;
+      return (
+        <img
+          src={happyFace}
+          title="Happy"
+          onClick={() => {
+            this.setSentimentId(Id);
+          }}
+        />
+      );
     } else if (Sentiment == "Negative") {
-      return <img src={sadFace} title="Sad" />;
-    } else return <img src={neutralFace} title="Neutral" />;
+      return (
+        <img
+          src={sadFace}
+          title="Sad"
+          onClick={() => {
+            this.setSentimentId(Id);
+          }}
+        />
+      );
+    } else {
+      return (
+        <img
+          src={neutralFace}
+          title="Neutral"
+          onClick={() => {
+            this.setSentimentId(Id);
+          }}
+        />
+      );
+    }
   }
 
-  selectSentiment(sentiment) {
-    return (
-      <div className="ChevronFlyout">
-        <div className="FlyoutHeader">
-          <div className="header-title">Change sentiment value...</div>
-          <span>
-            <div className="label-content">
-              <ul
-                role="listbox"
-                aria-orientation="vertical"
-                className="no_bullet"
-                aria-label="Change sentiment value..."
+  setSentimentId(sentimentId) {
+    this.setState({ selectedSentimentId: sentimentId });
+  }
+
+  selectSentiment(Id, sentiment) {
+    if (Id == this.state.selectedSentimentId) {
+      return (
+        <div
+          className="ChevronFlyout"
+          show={Id == this.state.selectedSentimentId}
+        >
+          <div className="FlyoutHeader">
+            <div className="header-title">Change sentiment value...</div>
+            <span>
+              <div className="label-content">
+                <ul
+                  role="listbox"
+                  aria-orientation="vertical"
+                  className="no_bullet"
+                  aria-label="Change sentiment value..."
+                >
+                  <li>
+                    <span
+                      className="label name"
+                      onClick={() => this.updateFeedback(Id, 1)}
+                    >
+                      <img src={happyFace} title="Happy" />{" "}
+                      {sentiment == "Positive" ? "Confirm " : "Change To "}
+                      Positive
+                    </span>
+                  </li>
+                  <li>
+                    <span
+                      className="label name"
+                      onClick={() => this.updateFeedback(Id, 2)}
+                    >
+                      <img src={neutralFace} title="Neutral" />{" "}
+                      {sentiment == "Neutral" ? "Confirm " : "Change To "}{" "}
+                      Neutral
+                    </span>
+                  </li>
+                  <li>
+                    <span
+                      className="label name"
+                      onClick={() => this.updateFeedback(Id, 0)}
+                    >
+                      <img src={sadFace} title="Sad" />{" "}
+                      {sentiment == "Negative" ? "Confirm " : "Change To "}
+                      Negative
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </span>
+            <div className="FlyoutFooter FlyoutFooter-Default">
+              <Button
+                color="secondary"
+                onClick={() => {
+                  this.setState({ selectedSentimentId: "" });
+                }}
               >
-                <li>
-                  <span
-                    className="label name"
-                    onClick={() => {
-                      console.log("heyy");
-                    }}
-                  >
-                    {" "}
-                    <img src={happyFace} title="Happy" /> Confirm positive
-                  </span>
-                </li>
-                <li>
-                  <span className="label name">
-                    {" "}
-                    <img src={neutralFace} title="Neutral" /> Confirm Neutral
-                  </span>
-                </li>
-                <li>
-                  <span className="label name">
-                    {" "}
-                    <img src={sadFace} title="Sad" /> Confirm Negative
-                  </span>
-                </li>
-              </ul>
+                Cancel
+              </Button>
             </div>
-          </span>
-          <div className="FlyoutFooter FlyoutFooter-Default">
-            <Button color="secondary">Cancel</Button>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else return null;
   }
+
+  // overflow-y: scroll;
+  // height: 600px;
+  // position: relative;
 
   render() {
     var ColorCode = "#F4F2F2";
@@ -215,6 +269,7 @@ class Dashboard extends Component {
                                   </Col>
                                   <Col xs="12" md="1">
                                     {this.getSentimentPrediction(
+                                      emailData.Id,
                                       emailData.Sentiment
                                     )}
                                   </Col>
@@ -238,7 +293,10 @@ class Dashboard extends Component {
                                   </Col>
                                 </Row>
                                 <Row>
-                                  {this.selectSentiment(emailData.Sentiment)}
+                                  {this.selectSentiment(
+                                    emailData.Id,
+                                    emailData.Sentiment
+                                  )}
                                 </Row>
                               </CardBody>
                             </Card>

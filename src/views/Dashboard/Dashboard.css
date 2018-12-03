@@ -14,6 +14,7 @@
   height: 28px;
   padding-left: 5px;
   font-size: 13px;
+  `font-family: "Calibri";
 }
 .label-content {
   max-height: 208px;
@@ -24,9 +25,11 @@
   cursor: pointer;
   /* padding: 0.25rem 0.5rem; */
   -webkit-tap-highlight-color: rgba(108, 193, 232, 0.5);
+  font-family: "Calibri";
+  font-size: 15px;
 }
 .label-content li :hover {
-  background: yellow;
+  background: rgba(108, 193, 232, 0.5);
 }
 /* .label-content li .label.color {
   vertical-align: 20%;
