@@ -4,10 +4,7 @@ class Footer extends Component {
   render() {
     return (
       <footer className="app-footer">
-        <span>
-          <a href="https://pune.tie.org/">Email Sentiment Analysis</a>{" "}
-          &copy; 2018 Eternus.
-        </span>
+        <span>Email Sentiment Analysis &copy; 2018 Eternus.</span>
         <span className="ml-auto">
           Powered by{" "}
           <a href="https://www.eternussolutions.com/">

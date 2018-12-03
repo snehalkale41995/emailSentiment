@@ -7,14 +7,14 @@ class Layout extends Component {
   render() {
     return (
       <div className="app">
-        {/* <Header /> */}
+        <Header />
         <div className="app-body">
           {/* <main className="main"> */}
           <main>
             <Container fluid>{this.props.children}</Container>
           </main>
         </div>
-        {/* <Footer /> */}
+        <Footer />
       </div>
     );
   }

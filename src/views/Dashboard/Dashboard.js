@@ -19,6 +19,11 @@ import Loader from "../../components/Loader/Loader";
 import Modal from "../../components/Modal/ModalCart";
 import { Emoji } from "emoji-mart";
 import * as Toaster from "../../components/Modal/Toaster";
+import moment from "moment";
+import "./Dashboard.css";
+const happyFace = require("../../../public/img/happy.png");
+const neutralFace = require("../../../public/img/neutral.png");
+const sadFace = require("../../../public/img/sad.png");
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +39,7 @@ class Dashboard extends Component {
     let compRef = this;
     setTimeout(function() {
       compRef.setState({ loading: false });
-    }, 500);
+    }, 3000);
   }
 
   onEditFeedback(cell, row) {
@@ -97,113 +102,159 @@ class Dashboard extends Component {
     }, 1000);
   }
 
-  render() {
-    const options = {
-      sizePerPageList: [
-        {
-          text: "50",
-          value: 50
-        },
-        {
-          text: "100",
-          value: 100
-        },
-        {
-          text: "200",
-          value: 200
-        },
-        {
-          text: "All",
-          value: this.props.emailAnalysisData.length
-        }
-      ],
-      sizePerPage: 50
-    };
-    return this.state.loading ? (
-      <Loader loading={this.state.loading} />
-    ) : (
-      <div>
-        <ToastContainer autoClose={2000} />
-        <FormGroup row className="marginBottomZero">
-          <Col xs="6" md="3" />
-        </FormGroup>
-        <br />
-        <div className="animated fadeIn">
-          <Row>
-            <Col xs="12" lg="12">
-              <Card>
-                <CardHeader>
-                  <FormGroup row className="marginBottomZero">
-                    <Col xs="12" md="11">
-                      <h1 className="regHeading paddingTop8">Feedback</h1>
-                    </Col>
-                    <Button color="primary" onClick={() => this.exportToTsv()}>
-                      Upload TSV
-                    </Button>
-                    <Col xs="10" md="1" />
-                  </FormGroup>
-                </CardHeader>
-                <CardBody>
-                  <BootstrapTable
-                    ref="table"
-                    data={this.props.emailAnalysisData}
-                    pagination={true}
-                    search={true}
-                    options={options}
-                    version="4"
+  getSentimentPrediction(Sentiment) {
+    if (Sentiment == "Positive") {
+      return <img src={happyFace} title="Happy" />;
+    } else if (Sentiment == "Negative") {
+      return <img src={sadFace} title="Sad" />;
+    } else return <img src={neutralFace} title="Neutral" />;
+  }
+
+  selectSentiment(sentiment) {
+    return (
+      <div className="ChevronFlyout">
+        <div className="FlyoutHeader">
+          <div className="header-title">Change sentiment value...</div>
+          <span>
+            <div className="label-content">
+              <ul
+                role="listbox"
+                aria-orientation="vertical"
+                className="no_bullet"
+                aria-label="Change sentiment value..."
+              >
+                <li>
+                  <span
+                    className="label name"
+                    onClick={() => {
+                      console.log("heyy");
+                    }}
                   >
-                    <TableHeaderColumn
-                      dataField="Id"
-                      headerAlign="left"
-                      isKey
-                      hidden
-                    >
-                      Id
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="Subject"
-                      headerAlign="left"
-                      width="20"
-                      dataSort={true}
-                    >
-                      Subject
-                    </TableHeaderColumn>
-
-                    <TableHeaderColumn
-                      dataField="Sender"
-                      headerAlign="left"
-                      width="20"
-                      dataSort={true}
-                    >
-                      Sender
-                    </TableHeaderColumn>
-
-                    <TableHeaderColumn
-                      dataField="Sentiment"
-                      headerAlign="left"
-                      width="20"
-                      dataSort={true}
-                    >
-                      Sentiment
-                    </TableHeaderColumn>
-
-                    <TableHeaderColumn
-                      dataField="edit"
-                      headerAlign="left"
-                      width="15"
-                      dataFormat={this.onEditFeedback.bind(this)}
-                    >
-                      Feedback
-                    </TableHeaderColumn>
-                  </BootstrapTable>
-                  <ToastContainer autoClose={1000} />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                    {" "}
+                    <img src={happyFace} title="Happy" /> Confirm positive
+                  </span>
+                </li>
+                <li>
+                  <span className="label name">
+                    {" "}
+                    <img src={neutralFace} title="Neutral" /> Confirm Neutral
+                  </span>
+                </li>
+                <li>
+                  <span className="label name">
+                    {" "}
+                    <img src={sadFace} title="Sad" /> Confirm Negative
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </span>
+          <div className="FlyoutFooter FlyoutFooter-Default">
+            <Button color="secondary">Cancel</Button>
+          </div>
         </div>
       </div>
     );
+  }
+
+  render() {
+    var ColorCode = "#F4F2F2";
+    if (this.state.loading || this.props.emailAnalysisData.length === 0) {
+      return <Loader loading={this.state.loading} />;
+    } else {
+      return (
+        <div>
+          <ToastContainer autoClose={2000} />
+          <FormGroup row className="marginBottomZero">
+            <Col xs="6" md="3" />
+          </FormGroup>
+          <br />
+          <div className="animated fadeIn">
+            <Row>
+              <Col xs="12" md="5">
+                <iframe
+                  width="750"
+                  height="600"
+                  src="https://app.powerbi.com/view?r=eyJrIjoiYmQ1OGJlYTAtYTJiNi00ZjliLWIxYjktN2JlYzNiY2ZlNDAwIiwidCI6IjYzNmYwYmJjLTdmYjgtNDJhNS1iYjNhLWQwYjA5YjhiZTJiNyIsImMiOjZ9"
+                  frameborder="0"
+                />
+              </Col>
+              <Col sm={{ size: "auto", offset: 1 }} xs="12" md="6">
+                <Card>
+                  <CardHeader>
+                    <FormGroup row className="marginBottomZero">
+                      <Col xs="12" md="12">
+                        <h1 className="regHeading paddingTop8">Feedback</h1>
+                      </Col>
+                      {/* <Button color="primary" onClick={() => this.exportToTsv()}>
+                      Upload TSV
+                    </Button>
+                    <Col xs="10" md="1" /> */}
+                    </FormGroup>
+                  </CardHeader>
+                  <CardBody>
+                    {this.props.emailAnalysisData.map((emailData, index) => {
+                      return (
+                        <Row key={index} className="justify-content-left">
+                          <Col xs="12">
+                            <Card
+                              className="mx-12"
+                              style={{ backgroundColor: ColorCode }}
+                            >
+                              <CardHeader>
+                                <Row>
+                                  <Col xs="12" md="4">
+                                    <i className="icon-user" /> {""}{" "}
+                                    {emailData.Sender}
+                                  </Col>
+                                  <Col sm={{ size: "auto", offset: 5 }} md="2">
+                                    <i className="fa fa-clock-o" /> {""}{" "}
+                                    {moment(emailData.createdAt).format(
+                                      "DD.MM.YYYY"
+                                    )}
+                                  </Col>
+                                  <Col xs="12" md="1">
+                                    {this.getSentimentPrediction(
+                                      emailData.Sentiment
+                                    )}
+                                  </Col>
+                                </Row>
+                              </CardHeader>
+                              <CardBody
+                                style={{ fontWeight: "bold", fontSize: 20 }}
+                                className="p-8"
+                              >
+                                <Row>
+                                  <Col xs="12">
+                                    <h5> {emailData.Subject} </h5>
+                                  </Col>
+                                </Row>
+                                <Row>
+                                  <Col xs="12" md="6">
+                                    <h5>
+                                      {/* <i className="fa fa-map-marker" />{" "} */}
+                                      {emailData.Intent}
+                                    </h5>
+                                  </Col>
+                                </Row>
+                                <Row>
+                                  {this.selectSentiment(emailData.Sentiment)}
+                                </Row>
+                              </CardBody>
+                            </Card>
+                          </Col>
+                        </Row>
+                      );
+                    })}
+                    <ToastContainer autoClose={1000} />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        </div>
+      );
+    }
   }
 }
 const mapStateToProps = state => {
