@@ -73,12 +73,14 @@ export const getVerifiedData = () => {
     axios
       .get(`${AppConfig.serverURL}/api/metadata/verifiedEmails`)
       .then(response => {
-        emailList = _.map(
-          response.data,
-          _.partialRight(_.pick, ["Subject", "Verified"])
-        );
-        emailIds = _.map(response.data, _.partialRight(_.pick, ["Id"]));
-        dispatch(exportToTsv(emailList, emailIds));
+        if (response.data.length > 0) {
+          emailList = _.map(
+            response.data,
+            _.partialRight(_.pick, ["Subject", "Verified"])
+          );
+          emailIds = _.map(response.data, _.partialRight(_.pick, ["Id"]));
+          dispatch(exportToTsv(emailList, emailIds));
+        }
       });
   };
 };
@@ -111,7 +113,7 @@ export const bulkUploadEmailData = emailIds => {
         emailDataIds
       )
       .then(response => {
-        // dispatch(runTsvEngine());
+        dispatch(runTsvEngine());
         dispatch(clearEmailDataError());
       })
       .catch(response => {
@@ -126,7 +128,8 @@ export const runTsvEngine = () => {
     axios
       .post(`${AppConfig.serverURL}/api/metadata/tsvRunEngine`)
       .then(response => {
-        // To call Arkita's python api
+        // console.log("error", response);
+        dispatch(clearEmailDataError());
       });
   };
 };

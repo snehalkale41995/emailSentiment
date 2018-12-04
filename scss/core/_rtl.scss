@@ -75,7 +75,7 @@
 
     &.sidebar-fixed {
       .main, .app-footer {
-        margin-right: $sidebar-minimized-width;
+        margin-right: 0;
       }
 
       &.sidebar-hidden {
