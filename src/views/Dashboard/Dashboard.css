@@ -1,7 +1,6 @@
 .ChevronFlyout {
   position: relative;
-  border-width: 1px;
-  border-style: solid;
+  border: 1px solid #c2cfd6;
   width: 100%;
 }
 .FlyoutHeader {
@@ -10,23 +9,27 @@
 }
 .header-title {
   border-bottom-style: solid;
+  border-bottom-color: #c2cfd6;
   border-width: 1px;
   height: 28px;
   padding-left: 5px;
-  font-size: 13px;
-  `font-family: "Calibri";
+  font-size: 14px;
+  font-family: "Calibri";
+  font-weight: normal;
 }
 .label-content {
   max-height: 208px;
   overflow-y: auto;
   width: 100%;
+  margin-top: 5px;
 }
 .label-content li {
   cursor: pointer;
-  /* padding: 0.25rem 0.5rem; */
+  padding: 0.25rem 0.5rem;
   -webkit-tap-highlight-color: rgba(108, 193, 232, 0.5);
   font-family: "Calibri";
-  font-size: 15px;
+  font-weight: lighter;
+  font-size: 16px;
 }
 .label-content li :hover {
   background: rgba(108, 193, 232, 0.5);
@@ -60,4 +63,16 @@
 .FlyoutFooter-Default {
   margin-left: 580px;
   margin-top: -12px;
+}
+
+.searchBox {
+  width: 14rem;
+  height: 2rem;
+  border: solid #688080 1px;
+}
+
+.cardContainer {
+  overflow-y: scroll;
+  height: 600px;
+  position: relative;
 }

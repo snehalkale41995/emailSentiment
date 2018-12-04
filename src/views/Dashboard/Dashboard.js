@@ -9,21 +9,23 @@ import {
   Card,
   CardHeader,
   Row,
-  CardBody
+  CardBody,
+  Input
 } from "reactstrap";
 import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 import "react-bootstrap-table/dist/react-bootstrap-table.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../components/Loader/Loader";
-import Modal from "../../components/Modal/ModalCart";
 import { Emoji } from "emoji-mart";
 import * as Toaster from "../../components/Modal/Toaster";
 import moment from "moment";
 import "./Dashboard.css";
+import SearchInput, { createFilter } from "react-search-input";
 const happyFace = require("../../../public/img/happy.png");
 const neutralFace = require("../../../public/img/neutral.png");
 const sadFace = require("../../../public/img/sad.png");
+const KEYS_TO_FILTERS = ["Sender", "Subject", "Sentiment", "createdAt"];
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +34,8 @@ class Dashboard extends Component {
       loading: true,
       roomId: "",
       userFeedbackFlag: true,
-      selectedSentimentId: ""
+      selectedSentimentId: "",
+      searchTerm: ""
     };
   }
 
@@ -44,49 +47,12 @@ class Dashboard extends Component {
     }, 2000);
   }
 
-  onEditFeedback(cell, row) {
-    return (
-      <FormGroup row>
-        <Col>
-          <Emoji
-            emoji="blush"
-            set="emojione"
-            onClick={() => this.updateFeedback(row.Id, 1)}
-            size={40}
-          />
-        </Col>
-        <Col>
-          <Emoji
-            emoji="neutral_face"
-            set="emojione"
-            onClick={() => this.updateFeedback(row.Id, 2)}
-            size={40}
-          />
-        </Col>
-        <Col>
-          <Emoji
-            emoji="white_frowning_face"
-            onClick={() => this.updateFeedback(row.Id, 0)}
-            set="emojione"
-            size={40}
-          />
-        </Col>
-      </FormGroup>
-    );
-  }
-
   updateFeedback(emailId, VerifiedField) {
-    this.setState({ loading: true });
-
-    let compRef = this;
     let emailData = {
       Id: emailId,
       Verified: VerifiedField
     };
     this.props.updateEmailData(emailData);
-    setTimeout(function() {
-      compRef.setState({ loading: false });
-    }, 500);
   }
 
   exportToTsv() {
@@ -207,15 +173,18 @@ class Dashboard extends Component {
     } else return null;
   }
 
-  // overflow-y: scroll;
-  // height: 600px;
-  // position: relative;
+  searchUpdated(term) {
+    this.setState({ searchTerm: term });
+  }
 
   render() {
     var ColorCode = "#F4F2F2";
     if (this.state.loading || this.props.emailAnalysisData.length === 0) {
       return <Loader loading={this.state.loading} />;
     } else {
+      const filteredEmails = this.props.emailAnalysisData.filter(
+        createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
+      );
       return (
         <div>
           <ToastContainer autoClose={2000} />
@@ -234,20 +203,26 @@ class Dashboard extends Component {
                 />
               </Col>
               <Col sm={{ size: "auto", offset: 1 }} xs="12" md="6">
-                <Card>
+                <Card className="cardContainer">
                   <CardHeader>
                     <FormGroup row className="marginBottomZero">
-                      <Col xs="12" md="12">
+                      <Col xs="12" md="8">
                         <h1 className="regHeading paddingTop8">Feedback</h1>
                       </Col>
                       {/* <Button color="primary" onClick={() => this.exportToTsv()}>
                       Upload TSV
                     </Button>
                     <Col xs="10" md="1" /> */}
+                      <Col xs="12" md="4">
+                        <SearchInput
+                          className="search-input"
+                          onChange={this.searchUpdated.bind(this)}
+                        />
+                      </Col>
                     </FormGroup>
                   </CardHeader>
                   <CardBody>
-                    {this.props.emailAnalysisData.map((emailData, index) => {
+                    {filteredEmails.map((emailData, index) => {
                       return (
                         <Row key={index} className="justify-content-left">
                           <Col xs="12">
@@ -285,11 +260,10 @@ class Dashboard extends Component {
                                   </Col>
                                 </Row>
                                 <Row>
-                                  <Col xs="12" md="6">
-                                    <h5>
-                                      {/* <i className="fa fa-map-marker" />{" "} */}
-                                      {emailData.Intent}
-                                    </h5>
+                                  <Col xs="12" md="12">
+                                    <h6>
+                                    {emailData.EmailBody} 
+                                    </h6>
                                   </Col>
                                 </Row>
                                 <Row>
