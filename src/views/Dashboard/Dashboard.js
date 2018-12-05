@@ -194,15 +194,15 @@ class Dashboard extends Component {
           <br />
           <div className="animated fadeIn">
             <Row>
-              <Col xs="12" md="5">
+              <Col xs="12" md="8">
                 <iframe
-                  width="750"
+                  width="100%"
                   height="600"
-                  src="https://app.powerbi.com/view?r=eyJrIjoiYmQ1OGJlYTAtYTJiNi00ZjliLWIxYjktN2JlYzNiY2ZlNDAwIiwidCI6IjYzNmYwYmJjLTdmYjgtNDJhNS1iYjNhLWQwYjA5YjhiZTJiNyIsImMiOjZ9"
+                  src="https://app.powerbi.com/view?r=eyJrIjoiN2FjZDc1NjktZTVjNS00MDVhLWFmZTQtYTI1Yjg3NGMxMjNhIiwidCI6IjYzNmYwYmJjLTdmYjgtNDJhNS1iYjNhLWQwYjA5YjhiZTJiNyIsImMiOjZ9"
                   frameborder="0"
                 />
               </Col>
-              <Col sm={{ size: "auto", offset: 1 }} xs="12" md="6">
+              <Col xs="12" md="4">
                 <Card className="cardContainer">
                   <CardHeader>
                     <FormGroup row className="marginBottomZero">
@@ -226,12 +226,17 @@ class Dashboard extends Component {
                       return (
                         <Row key={index} className="justify-content-left">
                           <Col xs="12">
-                            <Card
-                              className="mx-12"
-                              style={{ backgroundColor: ColorCode }}
-                            >
+                            <Card style={{ backgroundColor: ColorCode }}>
                               <CardHeader>
                                 <Row>
+                                  <Col xs="12" sm="1">
+                                    <i className="icon-user" />
+                                  </Col>
+                                  <Col xs="12" sm="5">
+                                    {emailData.Sender}
+                                  </Col>
+                                </Row>
+                                {/* <Row>
                                   <Col xs="12" md="4">
                                     <i className="icon-user" /> {""}{" "}
                                     {emailData.Sender}
@@ -248,7 +253,7 @@ class Dashboard extends Component {
                                       emailData.Sentiment
                                     )}
                                   </Col>
-                                </Row>
+                                </Row> */}
                               </CardHeader>
                               <CardBody
                                 style={{ fontWeight: "bold", fontSize: 20 }}
@@ -261,9 +266,7 @@ class Dashboard extends Component {
                                 </Row>
                                 <Row>
                                   <Col xs="12" md="12">
-                                    <h6>
-                                    {emailData.EmailBody} 
-                                    </h6>
+                                    <h6>{emailData.EmailBody}</h6>
                                   </Col>
                                 </Row>
                                 <Row>
